@@ -17,16 +17,17 @@ const FORCE_FULL = new URLSearchParams(location.search).has("full");
 const CALM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Une entrée par section de la page, dans le même ordre.
-// x : décalage de la forme à droite du texte. y : décalage sur écran étroit. shade : voile derrière le texte.
+// x, y : position sur grand écran. ns, cy : taille et centre de la forme dans la zone haute du téléphone.
+// shade : voile derrière le texte sur grand écran.
 const SCENES = [
-  { shape: "drop", x: 3.1, ny: -7.6, ns: 1.9, shade: 0.7, cam: [0, 0.2, 10], look: [0, 0.4, 0], size: 1.5, alpha: 0.32, sway: 0.25 },
-  { shape: "ripple", shade: 1, cam: [0, 1.1, 9.5], look: [0, -0.5, -2], size: 3.4, alpha: 1.15, ripple: 1 },
-  { shape: "sheets", shade: 1, cam: [0, 0.2, 10], look: [0, 0.2, 0], size: 1.9, alpha: 0.6, sway: 0.1 },
-  { shape: "people", shade: 1, cam: [0, 0.2, 9.5], look: [0, 0.3, 0], size: 2, alpha: 0.55, sway: 0.16 },
-  { shape: "qr", x: 3.3, ny: -7.8, shade: 0.9, cam: [0, 0.2, 9.5], look: [0, 0.2, 0], size: 2.5, alpha: 0.85, sway: 0.3 },
-  { shape: "infinity", shade: 0, cam: [0, 0.2, 10], look: [0, 0.2, 0], size: 1.9, alpha: 0.42, sway: 0.28, shimmer: 1 },
-  { shape: "kente", y: 1.3, shade: 0, cam: [0, 0.2, 9], look: [0, 0.2, 0], size: 2.3, alpha: 1, sway: 0.08, shimmer: 0.8 },
-  { shape: "logo", y: 1.1, shade: 0, cam: [0, 0.2, 10], look: [0, 0.25, 0], size: 2.2, alpha: 0.9, sway: 0.05, shimmer: 0.7 },
+  { shape: "drop", x: 3.1, ns: 2.2, cy: 0.45, shade: 0.7, cam: [0, 0.2, 10], look: [0, 0.4, 0], size: 1.5, alpha: 0.32, sway: 0.25 },
+  { shape: "ripple", cy: -1.4, shade: 1, cam: [0, 1.1, 9.5], look: [0, -0.5, -2], size: 3.4, alpha: 1.15, ripple: 1 },
+  { shape: "sheets", ns: 0.8, cy: 0.5, shade: 1, cam: [0, 0.2, 10], look: [0, 0.2, 0], size: 1.9, alpha: 0.6, sway: 0.1 },
+  { shape: "people", ns: 1.05, cy: 0.55, shade: 1, cam: [0, 0.2, 9.5], look: [0, 0.3, 0], size: 2, alpha: 0.55, sway: 0.16 },
+  { shape: "qr", x: 3.3, ns: 1.25, cy: 0.5, shade: 0.9, cam: [0, 0.2, 9.5], look: [0, 0.2, 0], size: 2.5, alpha: 0.85, sway: 0.3 },
+  { shape: "infinity", cy: 0.45, shade: 0, cam: [0, 0.2, 10], look: [0, 0.2, 0], size: 1.9, alpha: 0.42, sway: 0.28, shimmer: 1 },
+  { shape: "kente", y: 1.3, ns: 0.74, cy: 0.5, shade: 0, cam: [0, 0.2, 9], look: [0, 0.2, 0], size: 2.3, alpha: 1, sway: 0.08, shimmer: 0.8 },
+  { shape: "logo", y: 1.1, cy: 0.45, glow: 0.62, shade: 0, cam: [0, 0.2, 10], look: [0, 0.25, 0], size: 2.2, alpha: 0.9, sway: 0.05, shimmer: 0.7 },
 ];
 
 const VERTEX = /* glsl */ `
@@ -91,6 +92,9 @@ const FRAGMENT = /* glsl */ `
 
 const scrim = document.getElementById("scrim");
 const sections = [...document.querySelectorAll(".panel")];
+
+// Hauteur du centre des formes sur téléphone, en part de la moitié haute de l'écran.
+const PHONE_ZONE = 0.5;
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const smooth = (a, b, x) => {
@@ -213,10 +217,12 @@ async function startScene() {
   const STEPS = [1.5, 1.25, 1, 1, 1];
   let step = 0;
   let narrow = false;
+  let halfH = 7;
 
   function resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    // Le canevas suit la plus grande hauteur d'écran : la barre du navigateur mobile ne le redimensionne pas.
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
     const dpr = Math.min(window.devicePixelRatio, STEPS[step]);
     renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
@@ -228,6 +234,7 @@ async function startScene() {
     camera.updateProjectionMatrix();
     uniforms.uPixel.value = Math.max(Math.min(h, w * 0.5625) / 1080, w < h ? 0.42 : 0.8) * dpr;
     narrow = w <= 900;
+    halfH = 10 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   }
   window.addEventListener("resize", resize);
 
@@ -282,15 +289,16 @@ async function startScene() {
     const a = SCENES[index];
     const b = SCENES[index + 1];
     const e = smooth(0, 1, mix);
-    uniforms.uSize.value = lerp(a.size, b.size, e);
-    uniforms.uAlpha.value = lerp(a.alpha, b.alpha, e);
+    // Moins de points et de pixels sur téléphone : chacun brille davantage pour garder la présence de l'or.
+    uniforms.uSize.value = lerp(a.size, b.size, e) * (narrow ? 1.3 : 1);
+    uniforms.uAlpha.value = lerp(a.alpha, b.alpha, e) * (narrow ? 1.5 * lerp(a.glow ?? 1, b.glow ?? 1, e) : 1);
     uniforms.uRipple.value = lerp(a.ripple ?? 0, b.ripple ?? 0, e);
     uniforms.uShimmer.value = lerp(a.shimmer ?? 0, b.shimmer ?? 0, e);
     const sway = lerp(a.sway ?? 0, b.sway ?? 0, e) * uniforms.uMotion.value;
     points.rotation.y = Math.sin(time * 0.22) * sway;
     points.rotation.x = Math.sin(time * 0.17) * sway * 0.25;
 
-    const place = (s) => (narrow ? [0, s.ny ?? s.y ?? 0] : [s.x ?? 0, s.y ?? 0]);
+    const place = (s) => (narrow ? [0, PHONE_ZONE * halfH - s.cy * (s.ns ?? 1)] : [s.x ?? 0, s.y ?? 0]);
     const [ax, ay] = place(a);
     const [bx, by] = place(b);
     points.position.set(lerp(ax, bx, e), lerp(ay, by, e), 0);
@@ -300,7 +308,7 @@ async function startScene() {
     camLook.fromArray(a.look).lerp(v.fromArray(b.look), e);
     camera.position.copy(camPos);
     camera.lookAt(camLook);
-    scrim.style.opacity = lerp(a.shade, b.shade, e).toFixed(3);
+    scrim.style.opacity = narrow ? 1 : lerp(a.shade, b.shade, e).toFixed(3);
 
     composer.render();
 

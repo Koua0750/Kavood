@@ -36,9 +36,10 @@ a:focus-visible {
 
 #scene {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 100lvh;
   display: block;
 }
 
@@ -299,30 +300,43 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
-/* Écran étroit : le voile couvre toute la largeur et le texte passe en premier. */
+/* Écran étroit : la forme garde le haut de l'écran, le texte passe dessous. */
 @media (max-width: 900px) {
   .nav nav {
     display: none;
   }
 
+  .nav {
+    padding-top: 1.1rem;
+  }
+
   #scrim {
-    background: rgba(11, 10, 13, 0.6);
+    background: linear-gradient(180deg, transparent 0%, transparent 36%, rgba(11, 10, 13, 0.86) 50%, rgba(11, 10, 13, 0.94) 100%);
   }
 
-  .panel {
-    padding: 6.5rem var(--gutter) 4rem;
-  }
-
-  .hero {
+  .panel,
+  .panel.low {
     align-items: flex-start;
+    padding: 41svh var(--gutter) 3.5rem;
   }
 
-  .copy {
+  .panel.center {
+    justify-content: flex-start;
+  }
+
+  .copy,
+  .panel.center .copy {
     max-width: 40rem;
+    width: 100%;
+  }
+
+  .eyebrow {
+    margin-bottom: 0.7rem;
+    font-size: 0.95rem;
   }
 
   h1 {
-    font-size: clamp(2.6rem, 7.4vw, 4.6rem);
+    font-size: clamp(2.2rem, 9.2vw, 4.2rem);
   }
 
   h1 em {
@@ -330,11 +344,43 @@ html.lenis body {
   }
 
   h2 {
-    font-size: clamp(2.2rem, 6.4vw, 4rem);
+    font-size: clamp(2rem, 8.4vw, 3.6rem);
+  }
+
+  .lead {
+    margin-top: 0.9rem;
+    font-size: 1.04rem;
+    line-height: 1.5;
+  }
+
+  .actions {
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+  }
+
+  .button {
+    flex: 1 1 auto;
+    min-height: 3rem;
+    padding: 0 1.1rem;
+    font-size: 1rem;
+  }
+
+  .button.small {
+    flex: none;
+  }
+
+  .points {
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+
+  .points li {
+    padding: 0.6rem 0;
   }
 
   .domains {
     grid-template-columns: 1fr;
+    margin-top: 1.5rem;
   }
 }
 
