@@ -6,3 +6,4 @@
 - Textes : `index.html`. Formes : `src/shapes.js`. Réglages du fond : `SCENES` dans `src/main.js`.
 - Ancienne présentation : `presentation-culte.html`, sources dans `archive-presentation/`.
 - Développement : `npm install`, `npm run dev`, puis `npm run build` pour refaire `dist/index.html`.
+- Mise en ligne : Netlify lit `netlify.toml`, construit le site et publie `dist` à chaque envoi sur `main`.
