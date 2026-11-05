@@ -1,0 +1,353 @@
+:root {
+  --bg: #0b0a0d;
+  --ink: #f6efdc;
+  --body: #cdc5b6;
+  --gold: #e7b52c;
+  --on-gold: #0a0a0a;
+  --line: rgba(246, 239, 220, 0.16);
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Geist Variable", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Voile du côté du texte : il garde la lecture nette sur la poussière d'or. */
+#scrim {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  will-change: opacity;
+  background: linear-gradient(90deg, rgba(11, 10, 13, 0.92) 0%, rgba(11, 10, 13, 0.72) 34%, transparent 62%);
+}
+
+.nav {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem var(--gutter);
+}
+
+.brand img {
+  display: block;
+  height: 30px;
+  width: auto;
+}
+
+.nav nav {
+  display: flex;
+  gap: 2.25rem;
+  font-size: 0.97rem;
+  color: var(--body);
+}
+
+.nav nav a {
+  transition: color 0.2s ease;
+}
+
+.nav nav a:hover {
+  color: var(--ink);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0 1.75rem;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--on-gold);
+  font-weight: 600;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  background: #f2c64a;
+}
+
+.button.small {
+  min-height: 2.6rem;
+  padding: 0 1.25rem;
+  font-size: 0.95rem;
+}
+
+.button.ghost {
+  background: rgba(11, 10, 13, 0.4);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.button.ghost:hover {
+  background: rgba(246, 239, 220, 0.08);
+}
+
+main {
+  position: relative;
+  z-index: 2;
+}
+
+.panel {
+  display: flex;
+  align-items: center;
+  min-height: 100svh;
+  padding: 7rem var(--gutter);
+}
+
+.copy {
+  max-width: min(44rem, 52vw);
+}
+
+.panel.wide .copy {
+  max-width: 76rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.panel.low {
+  align-items: flex-end;
+  padding-bottom: 8vh;
+}
+
+.panel.center {
+  justify-content: center;
+  text-align: center;
+}
+
+.panel.center .copy {
+  max-width: 48rem;
+}
+
+.panel.center .lead {
+  text-wrap: balance;
+  margin-inline: auto;
+}
+
+.panel.center .actions {
+  justify-content: center;
+}
+
+.eyebrow {
+  margin: 0 0 1.25rem;
+  color: var(--gold);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+h1,
+h2 {
+  margin: 0;
+  font-family: "Fraunces Variable", Georgia, serif;
+  font-weight: 340;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.6rem, 5.3vw, 6rem);
+  line-height: 1.06;
+}
+
+h2 {
+  font-size: clamp(2.2rem, 4.2vw, 4.6rem);
+  line-height: 1.08;
+}
+
+h1 em,
+h2 em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+h1 em {
+  display: block;
+  white-space: nowrap;
+}
+
+.lead {
+  max-width: 36rem;
+  margin: 1.5rem 0 0;
+  color: var(--body);
+  font-size: clamp(1.08rem, 1.35vw, 1.3rem);
+  line-height: 1.55;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 2.25rem;
+}
+
+.contact-line {
+  margin: 1.25rem 0 0;
+  color: var(--body);
+  font-size: 1.02rem;
+}
+
+.contact-line a:hover {
+  color: var(--ink);
+}
+
+.points {
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--body);
+  font-size: clamp(1.05rem, 1.25vw, 1.2rem);
+  line-height: 1.45;
+}
+
+.points li {
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.points strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.domains {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2.75rem;
+}
+
+.domains article {
+  padding: 1.6rem;
+  border-radius: 18px;
+  background: rgba(16, 14, 19, 0.88);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.domains h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.domains p {
+  margin: 0;
+  color: var(--body);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Apparition sans toucher à la mise en page : seuls l'opacité et le déplacement changent. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 0.8s ease,
+    transform 1s cubic-bezier(0.16, 0.8, 0.24, 1);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Écran étroit : le voile couvre toute la largeur et le texte passe en premier. */
+@media (max-width: 900px) {
+  .nav nav {
+    display: none;
+  }
+
+  #scrim {
+    background: rgba(11, 10, 13, 0.6);
+  }
+
+  .panel {
+    padding: 6.5rem var(--gutter) 4rem;
+  }
+
+  .hero {
+    align-items: flex-start;
+  }
+
+  .copy {
+    max-width: 40rem;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 7.4vw, 4.6rem);
+  }
+
+  h1 em {
+    white-space: normal;
+  }
+
+  h2 {
+    font-size: clamp(2.2rem, 6.4vw, 4rem);
+  }
+
+  .domains {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .domains {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

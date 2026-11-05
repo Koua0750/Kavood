@@ -1,0 +1,95 @@
+html {
+  background: #08070a;
+  color: #f6efdc;
+  font-family: "Geist Variable", system-ui, sans-serif;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+
+html.driving {
+  scroll-snap-type: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  margin: 0;
+}
+
+body.idle {
+  cursor: none;
+}
+
+section {
+  height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.line {
+  margin: 0;
+  padding: 0 8vw;
+  text-align: center;
+  font-size: clamp(1.6rem, 3.6vw, 5rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+#scene {
+  display: none;
+}
+
+/* La 3D est disponible : le texte se fixe au-dessus de la scène. */
+.fx #scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.fx .line {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.fallback-logo {
+  width: min(70vw, 620px);
+  filter: invert(1) hue-rotate(180deg);
+}
+
+#hint {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.4vh;
+  margin: 0;
+  padding: 0 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #a39c8d;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+#hint.off {
+  opacity: 0;
+}
