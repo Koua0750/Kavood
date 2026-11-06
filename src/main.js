@@ -26,6 +26,7 @@ const SCENES = [
   { shape: "people", ns: 1.05, cy: 0.55, shade: 1, cam: [0, 0.2, 9.5], look: [0, 0.3, 0], size: 2, alpha: 0.55, sway: 0.16 },
   { shape: "qr", x: 3.3, ns: 1.25, cy: 0.5, shade: 0.9, cam: [0, 0.2, 9.5], look: [0, 0.2, 0], size: 2.5, alpha: 0.85, sway: 0.3 },
   { shape: "infinity", cy: 0.45, shade: 0, cam: [0, 0.2, 10], look: [0, 0.2, 0], size: 1.9, alpha: 0.42, sway: 0.28, shimmer: 1 },
+  { shape: "lock", x: 3.3, ns: 1.15, cy: 0.5, shade: 0.9, cam: [0, 0.2, 9.5], look: [0, 0.2, 0], size: 2.4, alpha: 0.85, sway: 0.34, shimmer: 0.6 },
   { shape: "kente", y: 1.3, ns: 0.74, cy: 0.5, shade: 0, cam: [0, 0.2, 9], look: [0, 0.2, 0], size: 2.3, alpha: 1, sway: 0.08, shimmer: 0.8 },
   { shape: "logo", y: 1.1, cy: 0.45, glow: 0.62, shade: 0, cam: [0, 0.2, 10], look: [0, 0.25, 0], size: 2.2, alpha: 0.9, sway: 0.05, shimmer: 0.7 },
 ];
@@ -288,6 +289,7 @@ async function startScene() {
     people: shapes.people(N),
     qr: shapes.qr(N),
     infinity: shapes.infinity(N),
+    lock: shapes.lock(N),
     kente: await shapes.kente(N, kenteUrl),
     logo: await shapes.logo(N, logoUrl),
   };

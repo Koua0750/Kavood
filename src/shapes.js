@@ -171,6 +171,49 @@ export function halo(n) {
   });
 }
 
+export function lock(n) {
+  const inBody = (x, y) => {
+    const w = 1.35;
+    const top = 0.7;
+    const bottom = -1.3;
+    const c = 0.26;
+    const dx = Math.max(Math.abs(x) - (w - c), 0);
+    const dy = Math.max(y - (top - c), bottom + c - y, 0);
+    return Math.abs(x) <= w && y <= top && y >= bottom && dx * dx + dy * dy <= c * c;
+  };
+  const keyhole = (x, y) => x * x + (y + 0.15) ** 2 < 0.075 || (Math.abs(x) < 0.11 && y < -0.15 && y > -0.8);
+
+  return fill(n, () => {
+    if (R() < 0.7) {
+      let x;
+      let y;
+      do {
+        x = (R() - 0.5) * 2.7;
+        y = R() * 2 - 1.3;
+      } while (!inBody(x, y) || keyhole(x, y));
+      return [x, y + 0.2, (R() - 0.5) * 0.34, R() * 0.2];
+    }
+    // Anse : deux montants prolongés par un demi-cercle.
+    const radius = 0.86;
+    const tube = () => gauss() * 0.2;
+    const along = R() * (Math.PI * radius + 1.1);
+    let x;
+    let y;
+    if (along < 0.55) {
+      x = -radius;
+      y = 0.7 + along;
+    } else if (along > Math.PI * radius + 0.55) {
+      x = radius;
+      y = 0.7 + (along - Math.PI * radius - 0.55);
+    } else {
+      const a = Math.PI - (along - 0.55) / radius;
+      x = Math.cos(a) * radius;
+      y = 1.25 + Math.sin(a) * radius;
+    }
+    return [x + tube(), y + 0.2 + tube(), tube(), R() * 0.25];
+  });
+}
+
 export function infinity(n) {
   return fill(n, () => {
     const t = R() * Math.PI * 2;
