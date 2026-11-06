@@ -76,16 +76,70 @@ export function sheets(n) {
 }
 
 export function people(n) {
-  const clusters = Array.from({ length: 7 }, (_, i) => {
-    const a = (i / 7) * Math.PI * 2 + 0.3;
+  const GROUPS = 7;
+  const centers = Array.from({ length: GROUPS }, (_, i) => {
+    const a = (i / GROUPS) * Math.PI * 2 + 0.3;
     return [Math.cos(a) * 3.9, Math.sin(a) * 1.75 + 0.55, Math.sin(a * 2) * 1.2];
   });
-  clusters[0] = [0, 0.55, 0.4];
-  const stars = Array.from({ length: 460 }, (_, i) => {
-    const c = clusters[i % 7];
-    return [c[0] + gauss() * 1.9, c[1] + gauss() * 1.3, c[2] + gauss() * 1.4];
-  });
+  centers[0] = [0, 0.55, 0.4];
+  const groups = centers.map((c) =>
+    Array.from({ length: 62 }, () => [c[0] + gauss() * 1.9, c[1] + gauss() * 1.3, c[2] + gauss() * 1.4]),
+  );
+  const stars = groups.flat();
+  const gap = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+
+  // Dans chaque groupe, chacun est relié à ses deux voisins les plus proches.
+  const links = [];
+  for (const group of groups) {
+    for (const star of group) {
+      const near = group
+        .filter((o) => o !== star)
+        .sort((p, q) => gap(star, p) - gap(star, q))
+        .slice(0, 2);
+      for (const other of near) links.push([star, other]);
+    }
+  }
+
+  // Le groupe du centre et ses voisins se tiennent : toute l'assemblée forme un seul corps.
+  const hubs = groups.map((group, i) =>
+    group.reduce((best, star) => (gap(star, centers[i]) < gap(best, centers[i]) ? star : best)),
+  );
+  for (let i = 1; i < GROUPS; i++) {
+    links.push([hubs[0], hubs[i]]);
+    links.push([hubs[i], hubs[i === GROUPS - 1 ? 1 : i + 1]]);
+  }
+
+  // Tirage proportionnel à la longueur : un trait long reste aussi dense qu'un trait court.
+  const sums = [];
+  let total = 0;
+  for (const link of links) {
+    total += gap(link[0], link[1]);
+    sums.push(total);
+  }
+  const pick = () => {
+    const t = R() * total;
+    let low = 0;
+    let high = sums.length - 1;
+    while (low < high) {
+      const mid = (low + high) >> 1;
+      if (sums[mid] < t) low = mid + 1;
+      else high = mid;
+    }
+    return links[low];
+  };
+
   return fill(n, (i) => {
+    if (R() < 0.4) {
+      const [p, q] = pick();
+      const t = R();
+      const jitter = () => (R() - 0.5) * 0.012;
+      return [
+        p[0] + (q[0] - p[0]) * t + jitter(),
+        p[1] + (q[1] - p[1]) * t + jitter(),
+        p[2] + (q[2] - p[2]) * t + jitter(),
+        0,
+      ];
+    }
     const s = stars[i % stars.length];
     const t = R() * R() * 0.09;
     const a = R() * 6.283;
