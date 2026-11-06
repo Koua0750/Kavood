@@ -13,10 +13,15 @@
 }
 
 html {
+  scrollbar-width: none;
   background: var(--bg);
   color: var(--ink);
   font-family: "Geist Variable", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -131,6 +136,114 @@ a:focus-visible {
 .burger:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
+}
+
+/* Fil d'or : seuls des transformations bougent, pour rester fluide au défilement. */
+.rail {
+  position: fixed;
+  z-index: 3;
+  top: 50%;
+  right: clamp(1rem, 2vw, 2rem);
+  width: 2px;
+  height: min(52vh, 460px);
+  transform: translateY(-50%);
+}
+
+.rail-line,
+.rail-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+}
+
+.rail-line {
+  background: rgba(246, 239, 220, 0.16);
+}
+
+.rail-fill {
+  background: linear-gradient(180deg, rgba(231, 181, 44, 0.25), var(--gold));
+  transform: scaleY(0);
+  transform-origin: top;
+  will-change: transform;
+}
+
+.rail-drop {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 13px;
+  height: 18px;
+  fill: var(--gold);
+  filter: drop-shadow(0 0 7px rgba(231, 181, 44, 0.75));
+  pointer-events: none;
+  will-change: transform;
+}
+
+.rail-mark {
+  position: absolute;
+  left: 50%;
+  width: 2rem;
+  height: 1.5rem;
+  margin: -0.75rem 0 0 -1rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.rail-mark::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
+  border-radius: 50%;
+  background: #4a453e;
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease;
+}
+
+.rail-mark.passed::before {
+  background: var(--gold);
+}
+
+.rail-mark:hover::before,
+.rail-mark:focus-visible::before {
+  transform: scale(1.6);
+}
+
+.rail-mark span {
+  position: absolute;
+  top: 50%;
+  right: 2.1rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(16, 14, 19, 0.92);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink);
+  font: 500 0.9rem "Geist Variable", system-ui, sans-serif;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(6px, -50%, 0);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.rail-mark:hover span,
+.rail-mark:focus-visible span {
+  opacity: 1;
+  transform: translate3d(0, -50%, 0);
+}
+
+.rail-mark:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+  border-radius: 8px;
 }
 
 .footer {
@@ -444,6 +557,21 @@ html.lenis body {
 
   .burger {
     display: block;
+  }
+
+  /* Sur téléphone, le fil reste un simple repère : le doigt fait défiler la page. */
+  .rail {
+    right: 0.45rem;
+    height: 34vh;
+    pointer-events: none;
+  }
+
+  .rail-mark {
+    display: none;
+  }
+
+  .menu-open .rail {
+    opacity: 0;
   }
 
   .nav nav {

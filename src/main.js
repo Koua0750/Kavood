@@ -154,6 +154,76 @@ function navigation() {
   );
 }
 
+// Fil d'or : il remplace la barre de défilement. La goutte descend et chaque repère mène à sa section.
+function scrollRail() {
+  const NAMES = [
+    "Accueil",
+    "Au commencement",
+    "Aujourd’hui",
+    "Avec Kavod",
+    "L’appli des fidèles",
+    "La gestion",
+    "Confiance",
+    "Nos églises",
+    "La gloire de Dieu",
+    "Kavod",
+  ];
+  const rail = document.createElement("nav");
+  rail.className = "rail";
+  rail.setAttribute("aria-label", "Sections de la page");
+  rail.innerHTML =
+    '<span class="rail-line"></span><span class="rail-fill"></span>' +
+    '<svg class="rail-drop" viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C12 1 3 13 3 20a9 9 0 0 0 18 0C21 13 12 1 12 1Z"/></svg>';
+  const fill = rail.querySelector(".rail-fill");
+  const drop = rail.querySelector(".rail-drop");
+  const marks = sections.map((section, i) => {
+    const mark = document.createElement("button");
+    mark.type = "button";
+    mark.className = "rail-mark";
+    mark.setAttribute("aria-label", NAMES[i]);
+    mark.innerHTML = `<span>${NAMES[i]}</span>`;
+    mark.addEventListener("click", () => {
+      if (lenis) lenis.scrollTo(section, { duration: 1.6 });
+      else section.scrollIntoView();
+    });
+    rail.append(mark);
+    return mark;
+  });
+  document.body.append(rail);
+
+  const range = () => document.documentElement.scrollHeight - window.innerHeight;
+  const place = () => {
+    const max = Math.max(range(), 1);
+    sections.forEach((section, i) => {
+      marks[i].style.top = `${Math.min(section.offsetTop / max, 1) * 100}%`;
+    });
+  };
+  const update = () => {
+    const y = window.scrollY;
+    const share = Math.min(Math.max(y / Math.max(range(), 1), 0), 1);
+    const height = rail.clientHeight;
+    fill.style.transform = `scaleY(${share})`;
+    drop.style.transform = `translate3d(-50%, ${share * height - 9}px, 0)`;
+    let current = 0;
+    sections.forEach((section, i) => {
+      if (section.offsetTop <= y + window.innerHeight * 0.5) current = i;
+    });
+    marks.forEach((mark, i) => {
+      mark.classList.toggle("passed", i <= current);
+      if (i === current) mark.setAttribute("aria-current", "true");
+      else mark.removeAttribute("aria-current");
+    });
+  };
+  const refresh = () => {
+    place();
+    update();
+  };
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", refresh);
+  new ResizeObserver(refresh).observe(document.body);
+  refresh();
+}
+
 // Les textes montent doucement quand leur section arrive, dans les deux sens.
 function reveals() {
   const items = document.querySelectorAll(".panel .copy > *, .points li, .domains article");
@@ -400,6 +470,7 @@ async function startScene() {
 drawLogo();
 reveals();
 navigation();
+scrollRail();
 try {
   await startScene();
 } catch (error) {
