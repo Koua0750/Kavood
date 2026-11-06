@@ -8,20 +8,40 @@
       name="description"
       content="Kavod réunit les fidèles, les cultes, les dons et la pastorale au même endroit, pour que votre église se consacre à l'essentiel."
     />
-    <title>Kavod, toute la vie de votre église</title>
+    <title>Kavod, la plateforme des églises</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0a0d'/%3E%3Cpath d='M32 7C32 7 13 30 13 41a19 19 0 0 0 38 0C51 30 32 7 32 7Z' fill='%23e7b52c'/%3E%3C/svg%3E" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://kavood-ruby.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Kavod" />
+    <meta property="og:url" content="https://kavood-ruby.vercel.app/" />
+    <meta property="og:title" content="Kavod, la plateforme des églises" />
+    <meta property="og:description" content="Kavod réunit les fidèles, les cultes, les dons et la pastorale au même endroit, pour que votre église se consacre à l'essentiel." />
+    <meta property="og:image" content="https://kavood-ruby.vercel.app/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Le logo Kavod en poussière d'or sur fond noir" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
     <div id="scrim" aria-hidden="true"></div>
 
     <header class="nav">
-      <a class="brand" href="#top" aria-label="Kavod, accueil"><img id="logo" alt="Kavod" /></a>
-      <nav aria-label="Navigation principale">
-        <a href="#fideles">L'appli des fidèles</a>
+      <a class="brand" href="#top" aria-label="Kavod, accueil"><img class="js-logo" alt="Kavod" /></a>
+      <nav id="menu" aria-label="Navigation principale">
+        <a href="#fideles">L’appli des fidèles</a>
         <a href="#gestion">La gestion</a>
         <a href="#eglises">Nos églises</a>
       </nav>
-      <a class="button small" href="#contact">Nous contacter</a>
+      <div class="nav-actions">
+        <a class="button small" href="#contact">Nous contacter</a>
+        <button class="burger" type="button" aria-controls="menu" aria-expanded="false" aria-label="Ouvrir le menu">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </header>
 
     <main id="top">
@@ -31,7 +51,7 @@
           <h1>Chaque âme compte. <em>Chaque service aussi.</em></h1>
           <p class="lead">
             Kavod réunit les fidèles, les cultes, les dons et la pastorale au même endroit, pour que votre église
-            consacre son temps à l'essentiel.
+            consacre son temps à l’essentiel.
           </p>
           <div class="actions">
             <a class="button" href="#fideles">Découvrir Kavod</a>
@@ -45,18 +65,18 @@
           <p class="eyebrow">Au commencement</p>
           <h2>Tout commence par une <em>personne.</em></h2>
           <p class="lead">
-            Un visiteur qui pousse la porte. Une famille qui s'installe. Un enfant confié à l'ECODIM. Chacun a besoin
-            d'être connu et accompagné.
+            Un visiteur qui pousse la porte. Une famille qui s’installe. Un enfant confié à l’ECODIM. Chacun a besoin
+            d’être connu et accompagné.
           </p>
         </div>
       </section>
 
       <section class="panel">
         <div class="copy">
-          <p class="eyebrow">Aujourd'hui</p>
-          <h2>Puis les cahiers <em>s'accumulent.</em></h2>
+          <p class="eyebrow">Aujourd’hui</p>
+          <h2>Puis les cahiers <em>s’accumulent.</em></h2>
           <p class="lead">
-            Présences, reçus, listes, lettres à retaper. L'information se perd, et le temps du service avec elle.
+            Présences, reçus, listes, lettres à retaper. L’information se perd, et le temps du service avec elle.
           </p>
         </div>
       </section>
@@ -66,7 +86,7 @@
           <p class="eyebrow">Avec Kavod</p>
           <h2>Derrière chaque ligne, une <em>âme.</em></h2>
           <p class="lead">
-            Kavod redonne à chaque fidèle sa place : son foyer, ses départements, son parcours et le suivi dont il a
+            Kavod redonne à chaque fidèle sa place : son foyer, ses départements, son parcours et le suivi dont il a
             besoin.
           </p>
         </div>
@@ -74,37 +94,37 @@
 
       <section class="panel" id="fideles">
         <div class="copy">
-          <p class="eyebrow">L'appli des fidèles</p>
+          <p class="eyebrow">L’appli des fidèles</p>
           <h2>Votre église, dans <em>votre main.</em></h2>
           <ul class="points">
             <li><strong>Pointez votre présence</strong> au culte avec votre QR personnel.</li>
-            <li><strong>Donnez votre voix</strong> aux sondages et aux votes secrets de l'église.</li>
+            <li><strong>Donnez votre voix</strong> aux sondages et aux votes secrets de l’église.</li>
             <li><strong>Soutenez les entreprises</strong> des fidèles, à contacter en un geste.</li>
-            <li><strong>Rejoignez votre église</strong> et votre groupe d'un simple scan.</li>
+            <li><strong>Rejoignez votre église</strong> et votre groupe d’un simple scan.</li>
           </ul>
         </div>
       </section>
 
       <section class="panel wide" id="gestion">
         <div class="copy">
-          <p class="eyebrow">L'appli de gestion</p>
-          <h2>Tout ce qu'il faut à ceux qui <em>servent.</em></h2>
+          <p class="eyebrow">L’appli de gestion</p>
+          <h2>Tout ce qu’il faut à ceux qui <em>servent.</em></h2>
           <div class="domains">
             <article>
               <h3>Fidèles et accueil</h3>
               <p>Membres, foyers, enregistrement, import des fiches, adhésions, invitations par QR, recommandations.</p>
             </article>
             <article>
-              <h3>Vie de l'église</h3>
+              <h3>Vie de l’église</h3>
               <p>Cultes et événements, planning annuel, présences, salles et ressources.</p>
             </article>
             <article>
               <h3>Pastorale et formation</h3>
-              <p>Suivi pastoral confidentiel, parcours de formation, enfants à l'ECODIM et à la Jeunesse.</p>
+              <p>Suivi pastoral confidentiel, parcours de formation, enfants à l’ECODIM et à la Jeunesse.</p>
             </article>
             <article>
               <h3>Finances</h3>
-              <p>Dons et reçus, dépenses, budget, enveloppes par département, circuit d'approbation.</p>
+              <p>Dons et reçus, dépenses, budget, enveloppes par département, circuit d’approbation.</p>
             </article>
             <article>
               <h3>Communication</h3>
@@ -112,7 +132,7 @@
             </article>
             <article>
               <h3>Administration</h3>
-              <p>Documents et modèles de lettres, registres d'actes, rôles et permissions, journal d'audit.</p>
+              <p>Documents et modèles de lettres, registres d’actes, rôles et permissions, journal d’audit.</p>
             </article>
           </div>
         </div>
@@ -123,7 +143,7 @@
           <p class="eyebrow">Nos églises</p>
           <h2>Pensé pour la vie de nos <em>assemblées.</em></h2>
           <p class="lead">
-            Départements, cellules, ECODIM, Jeunesse, lettres de recommandation : Kavod parle le langage de votre église.
+            Départements, cellules, ECODIM, Jeunesse, lettres de recommandation : Kavod parle le langage de votre église.
           </p>
         </div>
       </section>
@@ -131,7 +151,7 @@
       <section class="panel low center" id="contact">
         <div class="copy">
           <h2>Kavod signifie la <em>gloire.</em></h2>
-          <p class="lead">Moins d'administration, plus de temps pour la mission.</p>
+          <p class="lead">Moins d’administration, plus de temps pour la mission.</p>
           <div class="actions">
             <a class="button" href="mailto:Kouastephane229@gmail.com?subject=Kavod%20pour%20notre%20%C3%A9glise">Nous écrire</a>
             <a class="button ghost" href="tel:+2250787903241">07 87 90 32 41</a>
@@ -140,6 +160,35 @@
         </div>
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div>
+          <img class="js-logo footer-logo" alt="Kavod" />
+          <p>Chaque âme compte. Chaque service aussi.</p>
+        </div>
+        <nav aria-label="Pied de page">
+          <p class="footer-title">Découvrir</p>
+          <a href="#fideles">L’appli des fidèles</a>
+          <a href="#gestion">La gestion</a>
+          <a href="#eglises">Nos églises</a>
+        </nav>
+        <div>
+          <p class="footer-title">Contact</p>
+          <a href="mailto:Kouastephane229@gmail.com">Kouastephane229@gmail.com</a>
+          <a href="tel:+2250787903241">07 87 90 32 41</a>
+        </div>
+      </div>
+      <details class="legal">
+        <summary>Mentions légales</summary>
+        <p>
+          Site édité par Kavod. Contact : Kouastephane229@gmail.com. Hébergement : Vercel. Ce site ne dépose aucun cookie
+          et ne mesure pas votre navigation. Les informations que vous nous envoyez par e-mail ou par téléphone servent
+          uniquement à vous répondre.
+        </p>
+      </details>
+      <p class="copyright">© 2026 Kavod</p>
+    </footer>
 
     <script type="module" src="/src/main.js"></script>
   </body>

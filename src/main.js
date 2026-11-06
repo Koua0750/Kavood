@@ -91,6 +91,7 @@ const FRAGMENT = /* glsl */ `
 `;
 
 const scrim = document.getElementById("scrim");
+const footer = document.querySelector(".footer");
 const sections = [...document.querySelectorAll(".panel")];
 
 // Hauteur du centre des formes sur téléphone, en part de la moitié haute de l'écran.
@@ -108,6 +109,47 @@ const lenis = CALM ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, ancho
 function lenisOnly(now) {
   lenis?.raf(now);
   requestAnimationFrame(lenisOnly);
+}
+
+// La barre suit le visiteur : elle s'efface quand il descend et revient dès qu'il remonte.
+function navigation() {
+  const nav = document.querySelector(".nav");
+  const burger = document.querySelector(".burger");
+  const links = document.querySelectorAll("#menu a");
+  let last = window.scrollY;
+
+  const open = (state) => {
+    document.body.classList.toggle("menu-open", state);
+    burger.setAttribute("aria-expanded", String(state));
+    burger.setAttribute("aria-label", state ? "Fermer le menu" : "Ouvrir le menu");
+    if (state) {
+      lenis?.stop();
+      nav.classList.remove("away");
+      links[0].focus({ preventScroll: true });
+    } else {
+      lenis?.start();
+    }
+  };
+
+  burger.addEventListener("click", () => open(!document.body.classList.contains("menu-open")));
+  links.forEach((a) => a.addEventListener("click", () => open(false)));
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && document.body.classList.contains("menu-open")) {
+      open(false);
+      burger.focus();
+    }
+  });
+  window.addEventListener(
+    "scroll",
+    () => {
+      const y = window.scrollY;
+      nav.classList.toggle("stuck", y > 40);
+      if (Math.abs(y - last) < 6) return;
+      nav.classList.toggle("away", y > last && y > window.innerHeight * 0.4);
+      last = y;
+    },
+    { passive: true },
+  );
 }
 
 // Les textes montent doucement quand leur section arrive, dans les deux sens.
@@ -144,7 +186,8 @@ async function drawLogo() {
     }
   }
   ctx.putImageData(data, 0, 0);
-  document.getElementById("logo").src = c.toDataURL("image/png");
+  const src = c.toDataURL("image/png");
+  document.querySelectorAll(".js-logo").forEach((el) => (el.src = src));
 }
 
 // Position dans le parcours : la forme reste posée tant que sa section remplit l'écran,
@@ -292,6 +335,9 @@ async function startScene() {
     // Moins de points et de pixels sur téléphone : chacun brille davantage pour garder la présence de l'or.
     uniforms.uSize.value = lerp(a.size, b.size, e) * (narrow ? 1.3 : 1);
     uniforms.uAlpha.value = lerp(a.alpha, b.alpha, e) * (narrow ? 1.5 * lerp(a.glow ?? 1, b.glow ?? 1, e) : 1);
+    // Le logo s'efface quand le pied de page arrive : il ne passe pas sous le texte de fin.
+    const fade = (window.scrollY + window.innerHeight - footer.offsetTop) / (footer.offsetHeight * 0.45);
+    uniforms.uAlpha.value *= 1 - smooth(0, 1, fade);
     uniforms.uRipple.value = lerp(a.ripple ?? 0, b.ripple ?? 0, e);
     uniforms.uShimmer.value = lerp(a.shimmer ?? 0, b.shimmer ?? 0, e);
     const sway = lerp(a.sway ?? 0, b.sway ?? 0, e) * uniforms.uMotion.value;
@@ -311,6 +357,8 @@ async function startScene() {
     scrim.style.opacity = narrow ? 1 : lerp(a.shade, b.shade, e).toFixed(3);
 
     composer.render();
+    // Le fond n'apparaît qu'une fois sa première image prête : pas de saut au chargement.
+    if (!canvas.classList.contains("ready")) canvas.classList.add("ready");
 
     // On mesure en continu : si la page rame, on allège par palier, sans à-coup visible.
     if (!FORCE_FULL && step < STEPS.length - 1 && document.visibilityState === "visible") {
@@ -336,6 +384,7 @@ async function startScene() {
 
 drawLogo();
 reveals();
+navigation();
 try {
   await startScene();
 } catch (error) {
