@@ -268,6 +268,100 @@ export function lock(n) {
   });
 }
 
+// Croix en volume, d'après l'image de référence : une face avant veinée, des flancs, une face
+// arrière, puis des faisceaux derrière, un sol en perspective et de la poussière devant.
+export async function cross(n, url) {
+  const { w, h, data } = await pixels(url);
+  const inside = (x, y) => x >= 0 && y >= 0 && x < w && y < h && data[(y * w + x) * 4 + 3] > 128;
+  const light = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) light[i] = (data[i * 4] + data[i * 4 + 1] + data[i * 4 + 2]) / 3;
+
+  // Contraste local : on compare chaque point à ses voisins pour révéler les veines du bois.
+  const sum = new Float64Array((w + 1) * (h + 1));
+  const area = new Float64Array((w + 1) * (h + 1));
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const ok = inside(x, y) ? 1 : 0;
+      const at = (y + 1) * (w + 1) + x + 1;
+      sum[at] = light[y * w + x] * ok + sum[at - 1] + sum[at - w - 1] - sum[at - w - 2];
+      area[at] = ok + area[at - 1] + area[at - w - 1] - area[at - w - 2];
+    }
+  }
+  const box = (table, x0, y0, x1, y1) =>
+    table[y1 * (w + 1) + x1] - table[y0 * (w + 1) + x1] - table[y1 * (w + 1) + x0] + table[y0 * (w + 1) + x0];
+  const face = [];
+  const edge = [];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (!inside(x, y)) continue;
+      const r = 9;
+      const x0 = Math.max(x - r, 0);
+      const y0 = Math.max(y - r, 0);
+      const x1 = Math.min(x + r + 1, w);
+      const y1 = Math.min(y + r + 1, h);
+      const mean = box(sum, x0, y0, x1, y1) / Math.max(box(area, x0, y0, x1, y1), 1);
+      const detail = Math.min(Math.max(0.5 + (light[y * w + x] - mean) / 46, 0), 1);
+      const border = !inside(x - 2, y) || !inside(x + 2, y) || !inside(x, y - 2) || !inside(x, y + 2);
+      face.push(x, y, border ? 1 : detail);
+      if (border) edge.push(x, y);
+    }
+  }
+
+  const count = face.length / 3;
+  const edges = edge.length / 2;
+  const scale = 0.0043;
+  const DEPTH = 0.46;
+  const toX = (x) => (x - 216) * scale;
+  const toY = (y) => (h / 2 - y) * scale;
+  const heart = [toX(214), toY(205)];
+  const ground = toY(h) - 0.02;
+
+  return fill(n, () => {
+    const r = R();
+    if (r < 0.54) {
+      // Face avant : la poussière suit les veines, et les arêtes restent nettes.
+      let i;
+      do {
+        i = Math.floor(R() * count);
+      } while (R() > Math.pow(face[i * 3 + 2], 2.1) + 0.05);
+      const d = face[i * 3 + 2];
+      return [toX(face[i * 3] + R()), toY(face[i * 3 + 1] + R()), DEPTH / 2, d > 0.78 ? 0.42 + R() * 0.4 : 0.03 + R() * 0.14];
+    }
+    if (r < 0.75) {
+      // Flancs : le contour de la croix, étiré dans la profondeur.
+      const i = Math.floor(R() * edges);
+      return [toX(edge[i * 2] + R()), toY(edge[i * 2 + 1] + R()), DEPTH / 2 - R() * DEPTH, R() * 0.1];
+    }
+    if (r < 0.79) {
+      // Face arrière, très légère : elle se devine quand la croix tourne.
+      const i = Math.floor(R() * count);
+      return [toX(face[i * 3]), toY(face[i * 3 + 1]), -DEPTH / 2, R() * 0.06];
+    }
+    if (r < 0.9) {
+      // Faisceaux diffus, loin derrière la croix : ils glissent quand on tourne autour.
+      let x;
+      let y;
+      do {
+        const ray = Math.floor(R() * 9);
+        const angle = ((-90 + (ray - 4) * 18) * Math.PI) / 180;
+        const len = 0.45 + Math.pow(R(), 1.35) * 3.1;
+        const wide = gauss() * (0.05 + len * 0.1);
+        x = heart[0] + Math.cos(angle) * len - Math.sin(angle) * wide;
+        y = heart[1] + Math.sin(angle) * len + Math.cos(angle) * wide;
+      } while (y < ground + 0.05);
+      return [x, y, -1.5 - R() * 0.3, R() * 0.1];
+    }
+    if (r < 0.97) {
+      // Sol en perspective, plus dense au pied de la croix.
+      const angle = R() * Math.PI * 2;
+      const radius = Math.pow(R(), 1.6) * 3.2;
+      return [Math.cos(angle) * radius, ground - radius * radius * 0.012 + gauss() * 0.02, Math.sin(angle) * radius * 0.8, R() * 0.1];
+    }
+    // Poussière en suspension devant la croix.
+    return [(R() - 0.5) * 6, ground + R() * 4.3, 0.8 + R() * 1.6, 0.2 + R() * 0.4];
+  });
+}
+
 export function infinity(n) {
   return fill(n, () => {
     const t = R() * Math.PI * 2;

@@ -8,6 +8,7 @@ import "./fonts.css";
 import "./style.css";
 import logoUrl from "./assets/kavod.png?inline";
 import kenteUrl from "./assets/kente2.jpg?inline";
+import crossUrl from "./assets/cross.webp?inline";
 import * as shapes from "./shapes.js";
 
 const SMALL = window.innerWidth < 900;
@@ -27,6 +28,7 @@ const SCENES = [
   { shape: "infinity", cy: 0.45, shade: 0, cam: [0, 0.2, 10], look: [0, 0.2, 0], size: 1.9, alpha: 0.42, sway: 0.28, shimmer: 1 },
   { shape: "lock", x: 3.3, ns: 1.15, cy: 0.5, shade: 0.9, cam: [0, 0.2, 9.5], look: [0, 0.2, 0], size: 2.4, alpha: 0.85, sway: 0.34, shimmer: 0.6 },
   { shape: "kente", y: 1.3, ns: 0.74, cy: 0.5, shade: 0, cam: [0, 0.2, 9], look: [0, 0.2, 0], size: 2.3, alpha: 1, sway: 0.08, shimmer: 0.8 },
+  { shape: "cross", y: 1.22, ns: 1.1, cy: 0.05, turn: -0.42, shade: 0, cam: [0, 0.9, 9.4], look: [0, 0.3, 0], size: 1.25, alpha: 1.02, sway: 0.2, shimmer: 0.28, glow: 0.8 },
   { shape: "logo", y: 1.1, cy: 0.45, glow: 0.62, shade: 0, cam: [0, 0.2, 10], look: [0, 0.25, 0], size: 2.2, alpha: 0.9, sway: 0.05, shimmer: 0.7 },
 ];
 
@@ -71,7 +73,7 @@ const VERTEX = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_PointSize = uSize * uPixel * (0.6 + aRnd.z * 0.8) * (10.0 / -mv.z);
     gl_Position = projectionMatrix * mv;
-    vTint = mix(aFrom.w, aTo.w, m);
+    vTint = mix(mod(aFrom.w, 2.0), mod(aTo.w, 2.0), m);
     vGlow = (0.72 + 0.28 * sin(uTime * 1.2 + aRnd.y * 50.0))
       * (1.0 + uShimmer * 0.8 * sin(p.x * 1.8 - uTime * 1.5));
   }
@@ -290,6 +292,7 @@ async function startScene() {
     infinity: shapes.infinity(N),
     lock: shapes.lock(N),
     kente: await shapes.kente(N, kenteUrl),
+    cross: await shapes.cross(N, crossUrl),
     logo: await shapes.logo(N, logoUrl),
   };
 
@@ -305,6 +308,14 @@ async function startScene() {
 
   let shown = journey();
   let last = performance.now();
+  const pointer = { x: 0, y: 0 };
+  const tilt = { x: 0, y: 0 };
+  if (!CALM && matchMedia("(pointer: fine)").matches) {
+    window.addEventListener("pointermove", (e) => {
+      pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
+    });
+  }
   let frames = 0;
   let measureStart = 0;
   const camPos = new THREE.Vector3();
@@ -342,8 +353,11 @@ async function startScene() {
     uniforms.uRipple.value = lerp(a.ripple ?? 0, b.ripple ?? 0, e);
     uniforms.uShimmer.value = lerp(a.shimmer ?? 0, b.shimmer ?? 0, e);
     const sway = lerp(a.sway ?? 0, b.sway ?? 0, e) * uniforms.uMotion.value;
-    points.rotation.y = Math.sin(time * 0.22) * sway;
-    points.rotation.x = Math.sin(time * 0.17) * sway * 0.25;
+    // La souris fait tourner légèrement la scène : c'est elle qui rend le relief évident.
+    tilt.x += (pointer.x - tilt.x) * (1 - Math.exp(-dt * 3));
+    tilt.y += (pointer.y - tilt.y) * (1 - Math.exp(-dt * 3));
+    points.rotation.y = lerp(a.turn ?? 0, b.turn ?? 0, e) + Math.sin(time * 0.22) * sway + tilt.x * 0.16;
+    points.rotation.x = Math.sin(time * 0.17) * sway * 0.25 + tilt.y * 0.08;
 
     const place = (s) => (narrow ? [0, PHONE_ZONE * halfH - s.cy * (s.ns ?? 1)] : [s.x ?? 0, s.y ?? 0]);
     const [ax, ay] = place(a);
