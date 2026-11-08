@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#0b0a0d" />
     <meta
       name="description"
-      content="Kavod réunit les fidèles, les cultes, les dons et la pastorale au même endroit, pour que votre église se consacre à l'essentiel."
+      content="Kavod aide les églises à gérer leurs membres, cultes, finances et suivi pastoral — une appli mobile et une plateforme web, au service de votre assemblée."
     />
-    <title>Kavod, la plateforme des églises</title>
+    <title>Kavod — Gérez votre église simplement</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0a0d'/%3E%3Cpath d='M32 7C32 7 13 30 13 41a19 19 0 0 0 38 0C51 30 32 7 32 7Z' fill='%23e7b52c'/%3E%3C/svg%3E" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href="https://kavood-ruby.vercel.app/" />
@@ -16,12 +16,12 @@
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:site_name" content="Kavod" />
     <meta property="og:url" content="https://kavood-ruby.vercel.app/" />
-    <meta property="og:title" content="Kavod, la plateforme des églises" />
-    <meta property="og:description" content="Kavod réunit les fidèles, les cultes, les dons et la pastorale au même endroit, pour que votre église se consacre à l'essentiel." />
+    <meta property="og:title" content="Kavod — Gérez votre église simplement" />
+    <meta property="og:description" content="Kavod aide les églises à gérer leurs membres, cultes, finances et suivi pastoral — une appli mobile et une plateforme web, au service de votre assemblée." />
     <meta property="og:image" content="https://kavood-ruby.vercel.app/og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Le logo Kavod en poussière d'or sur fond noir" />
+    <meta property="og:image:alt" content="Le logo Kavod en poussière d’or sur fond noir" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
@@ -31,12 +31,12 @@
     <header class="nav">
       <a class="brand" href="#top" aria-label="Kavod, accueil"><img class="js-logo" alt="Kavod" /></a>
       <nav id="menu" aria-label="Navigation principale">
-        <a href="#fideles">L’appli des fidèles</a>
-        <a href="#gestion">La gestion</a>
+        <a href="#fideles">L’appli mobile</a>
+        <a href="#gestion">La plateforme web</a>
         <a href="#eglises">Nos églises</a>
       </nav>
       <div class="nav-actions">
-        <a class="button small" href="#contact">Nous contacter</a>
+        <a class="button small" href="/downloads/kavod.apk" download="kavod.apk">Télécharger l'APK</a>
         <button class="burger" type="button" aria-controls="menu" aria-expanded="false" aria-label="Ouvrir le menu">
           <span></span>
           <span></span>
@@ -47,16 +47,21 @@
     <main id="top">
       <section class="panel hero">
         <div class="copy">
-          <p class="eyebrow">La plateforme des églises</p>
-          <h1>Chaque âme compte. <em>Chaque service aussi.</em></h1>
+          <p class="eyebrow">Une appli mobile + une plateforme web pour votre église</p>
+          <h1>Tout ce dont votre église a besoin, <em>au même endroit.</em></h1>
           <p class="lead">
-            Kavod réunit les fidèles, les cultes, les dons et la pastorale au même endroit, pour que votre église
-            consacre son temps à l’essentiel.
+            Membres, cultes, finances, suivi pastoral, communication — Kavod remplace les cahiers et les tableaux
+            par deux outils pensés pour la vie de votre assemblée : une appli mobile pour les fidèles et les responsables,
+            et une plateforme web pour la gestion complète.
           </p>
           <div class="actions">
-            <a class="button" href="#fideles">Découvrir Kavod</a>
-            <a class="button ghost" href="#gestion">Voir les fonctions</a>
+            <a class="button" href="#fideles">Voir ce que Kavod peut faire</a>
+            <a class="button ghost" href="#gestion">Toutes les fonctionnalités</a>
           </div>
+        </div>
+        <div class="scroll-hint" aria-hidden="true">
+          <span class="scroll-hint-line"></span>
+          <span class="scroll-hint-text">Découvrir</span>
         </div>
       </section>
 
@@ -65,8 +70,8 @@
           <p class="eyebrow">Au commencement</p>
           <h2>Tout commence par une <em>personne.</em></h2>
           <p class="lead">
-            Un visiteur qui pousse la porte. Une famille qui s’installe. Un enfant confié à l’ECODIM. Chacun a besoin
-            d’être connu et accompagné.
+            Un nouveau visage au culte. Une famille qui revient dimanche après dimanche. Un enfant inscrit à l’ECODIM.
+            Derrière chaque nom, il y a une personne à accueillir, à connaître et à accompagner.
           </p>
         </div>
       </section>
@@ -74,9 +79,10 @@
       <section class="panel">
         <div class="copy">
           <p class="eyebrow">Aujourd’hui</p>
-          <h2>Puis les cahiers <em>s’accumulent.</em></h2>
+          <h2>Les cahiers s’empilent. <em>L’information se perd.</em></h2>
           <p class="lead">
-            Présences, reçus, listes, lettres à retaper. L’information se perd, et le temps du service avec elle.
+            Présences notées à la main, reçus de dons introuvables, listes jamais à jour, lettres à retaper chaque fois.
+            Votre équipe passe ses soirées à rattraper ce que le dimanche a produit.
           </p>
         </div>
       </section>
@@ -84,55 +90,63 @@
       <section class="panel">
         <div class="copy">
           <p class="eyebrow">Avec Kavod</p>
-          <h2>Derrière chaque ligne, une <em>âme.</em></h2>
+          <h2>Chaque membre a sa fiche. <em>Chaque culte est suivi.</em></h2>
           <p class="lead">
-            Kavod redonne à chaque fidèle sa place : son foyer, ses départements, son parcours et le suivi dont il a
-            besoin.
+            Kavod structure la vie de votre assemblée : de l’accueil d’un nouveau visiteur au suivi pastoral,
+            en passant par les finances et la communication — pour que votre équipe retrouve du temps pour ce qui compte
+            vraiment : les personnes.
           </p>
         </div>
       </section>
 
       <section class="panel" id="fideles">
         <div class="copy">
-          <p class="eyebrow">L’appli des fidèles</p>
-          <h2>Votre église, dans <em>votre main.</em></h2>
+          <p class="eyebrow">L’appli mobile</p>
+          <h2>Votre église, dans <em>votre poche.</em></h2>
+          <p class="lead">
+            Pour les fidèles comme pour les responsables — une seule appli pour rester connecté à la vie de l’assemblée,
+            pointer les présences et partager les informations.
+          </p>
           <ul class="points">
-            <li><strong>Pointez votre présence</strong> au culte avec votre QR personnel.</li>
-            <li><strong>Donnez votre voix</strong> aux sondages et aux votes secrets de l’église.</li>
-            <li><strong>Soutenez les entreprises</strong> des fidèles, à contacter en un geste.</li>
-            <li><strong>Rejoignez votre église</strong> et votre groupe d’un simple scan.</li>
+            <li><strong>Présence au culte</strong> — chaque membre scanne son QR code en arrivant. Fini les feuilles de présence.</li>
+            <li><strong>Sondages et votes</strong> — participez aux décisions de l’assemblée, y compris les votes à bulletin secret.</li>
+            <li><strong>Annuaire des fidèles</strong> — retrouvez et soutenez les entreprises et services des membres de votre communauté.</li>
+            <li><strong>Rejoindre en un scan</strong> — un QR code suffit pour rejoindre votre église ou intégrer un groupe de cellule.</li>
           </ul>
+          <div class="actions">
+            <a class="button" href="/downloads/kavod.apk" download="kavod.apk">Télécharger l'appli Android (APK)</a>
+          </div>
         </div>
       </section>
 
       <section class="panel wide" id="gestion">
         <div class="copy">
-          <p class="eyebrow">L’appli de gestion</p>
-          <h2>Tout ce qu’il faut à ceux qui <em>servent.</em></h2>
+          <p class="eyebrow">La plateforme web</p>
+          <h2>Les outils dont vos responsables <em>ont vraiment besoin.</em></h2>
           <div class="domains">
             <article>
               <h3>Fidèles et accueil</h3>
-              <p>Membres, foyers, enregistrement, import des fiches, adhésions, invitations par QR, recommandations.</p>
+              <p>Créez et gérez la fiche de chaque membre et de chaque foyer. Accueillez les nouveaux avec un formulaire d’enregistrement, invitez-les par QR code, et éditez les lettres de recommandation en quelques clics.</p>
             </article>
             <article>
               <h3>Vie de l’église</h3>
-              <p>Cultes et événements, planning annuel, présences, salles et ressources.</p>
+              <p>Planifiez vos cultes, événements et activités sur un calendrier partagé. Suivez les présences automatiquement et gérez la réservation des salles et du matériel.</p>
             </article>
             <article>
               <h3>Pastorale et formation</h3>
-              <p>Suivi pastoral confidentiel, parcours de formation, enfants à l’ECODIM et à la Jeunesse.</p>
+              <p>Assurez un suivi pastoral confidentiel pour chaque membre. Créez des parcours de formation (baptême, mariage, etc.) et suivez les enfants inscrits à l’ECODIM et les jeunes.</p>
             </article>
             <article>
               <h3>Finances</h3>
-              <p>Dons et reçus, dépenses, budget, enveloppes par département, circuit d’approbation.</p>
+              <p>Enregistrez les dons, générez les reçus automatiquement, suivez les dépenses et le budget. Attribuez des enveloppes à chaque département avec un circuit de validation.</p>
             </article>
             <article>
               <h3>Communication</h3>
-              <p>Annonces, messages, médiathèque des prédications, sondages et votes, notifications.</p>
+              <p>Diffusez vos annonces, envoyez des messages ciblés, archivez vos prédications. Lancez des sondages ou des votes et notifiez vos membres en un clic.</p>
             </article>
             <article>
               <h3>Administration</h3>
-              <p>Documents et modèles de lettres, registres d’actes, rôles et permissions, journal d’audit.</p>
+              <p>Générez vos documents à partir de modèles (attestations, lettres…). Tenez vos registres d’actes, définissez qui a accès à quoi, et gardez une trace de chaque action importante.</p>
             </article>
           </div>
         </div>
@@ -143,13 +157,14 @@
           <p class="eyebrow">Confiance</p>
           <h2>Ce qui est confié à l’église reste <em>protégé.</em></h2>
           <p class="lead">
-            La vie d’une église touche à l’intime. Kavod est pensé pour que chacun n’accède qu’à ce qui le concerne.
+            Un suivi pastoral, un don, un vote : ce sont des informations sensibles. Kavod a été conçu pour que seules
+            les bonnes personnes y aient accès.
           </p>
           <ul class="points">
-            <li><strong>Suivi pastoral confidentiel</strong> : son contenu reste réservé à ceux qui accompagnent.</li>
-            <li><strong>Votes secrets</strong> : les résultats ne sont visibles qu’après la clôture.</li>
-            <li><strong>Droits par rôle</strong> : chaque responsable ne voit que ce que son service demande.</li>
-            <li><strong>Journal d’audit</strong> : les actions importantes sont tracées.</li>
+            <li><strong>Suivi pastoral verrouillé</strong> — seuls les accompagnants désignés peuvent voir le contenu d’un suivi. Personne d’autre.</li>
+            <li><strong>Votes réellement secrets</strong> — les bulletins sont anonymes et les résultats ne s’affichent qu’une fois le scrutin fermé.</li>
+            <li><strong>Accès par rôle</strong> — le trésorier voit les finances, le responsable jeunesse voit la jeunesse. Chacun accède uniquement à son périmètre.</li>
+            <li><strong>Historique complet</strong> — qui a modifié quoi, et quand ? Chaque action sensible est enregistrée dans un journal consultable.</li>
           </ul>
         </div>
       </section>
@@ -157,9 +172,10 @@
       <section class="panel low center" id="eglises">
         <div class="copy">
           <p class="eyebrow">Nos églises</p>
-          <h2>Pensé pour la vie de nos <em>assemblées.</em></h2>
+          <h2>Kavod comprend comment fonctionne <em>votre église.</em></h2>
           <p class="lead">
-            Départements, cellules, ECODIM, Jeunesse, lettres de recommandation : Kavod parle le langage de votre église.
+            Départements, cellules de maison, ECODIM, mouvement de Jeunesse, lettres de recommandation…
+            Ce ne sont pas des mots ajoutés après coup. Kavod a été construit autour de la réalité de nos assemblées.
           </p>
         </div>
       </section>
@@ -174,10 +190,10 @@
       <section class="panel low center" id="contact">
         <div class="copy">
           <h2>Kavod signifie la <em>gloire.</em></h2>
-          <p class="lead">Moins d’administration, plus de temps pour la mission.</p>
+          <p class="lead">Et notre mission, c’est que votre église ait le temps de s’y consacrer. Écrivez-nous ou appelez — on vous répond personnellement.</p>
           <div class="actions">
-            <a class="button" href="mailto:Kouastephane229@gmail.com?subject=Kavod%20pour%20notre%20%C3%A9glise">Nous écrire</a>
-            <a class="button ghost" href="tel:+2250787903241">07 87 90 32 41</a>
+            <a class="button" href="mailto:Kouastephane229@gmail.com?subject=Kavod%20pour%20notre%20%C3%A9glise">Demander une présentation</a>
+            <a class="button ghost" href="tel:+2250787903241">Appeler : 07 87 90 32 41</a>
           </div>
           <p class="contact-line"><a href="mailto:Kouastephane229@gmail.com">Kouastephane229@gmail.com</a></p>
         </div>
@@ -192,8 +208,8 @@
         </div>
         <nav aria-label="Pied de page">
           <p class="footer-title">Découvrir</p>
-          <a href="#fideles">L’appli des fidèles</a>
-          <a href="#gestion">La gestion</a>
+          <a href="#fideles">L’appli mobile</a>
+          <a href="#gestion">La plateforme web</a>
           <a href="#eglises">Nos églises</a>
         </nav>
         <div>
@@ -205,7 +221,7 @@
       <details class="legal">
         <summary>Mentions légales</summary>
         <p>
-          Site édité par Kavod. Contact : Kouastephane229@gmail.com. Hébergement : Vercel. Ce site ne dépose aucun cookie
+          Site édité par Kavod. Contact : Kouastephane229@gmail.com. Hébergement : Vercel. Ce site ne dépose aucun cookie
           et ne mesure pas votre navigation. Les informations que vous nous envoyez par e-mail ou par téléphone servent
           uniquement à vous répondre.
         </p>

@@ -20,7 +20,7 @@ const CALM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // x, y : position sur grand écran. ns, cy : taille et centre de la forme dans la zone haute du téléphone.
 // shade : voile derrière le texte sur grand écran.
 const SCENES = [
-  { shape: "drop", x: 3.1, ns: 2.2, cy: 0.45, shade: 0.7, cam: [0, 0.2, 10], look: [0, 0.4, 0], size: 1.5, alpha: 0.32, sway: 0.25 },
+  { shape: "drop", x: 3.6, ns: 2.2, cy: 0.45, shade: 0.7, cam: [0, 0.2, 10], look: [0, 0.4, 0], size: 1.5, scale: 1.0, alpha: 0.35, sway: 0.22, shimmer: 0.45 },
   { shape: "ripple", cy: -1.4, shade: 1, cam: [0, 1.1, 9.5], look: [0, -0.5, -2], size: 3.4, alpha: 1.15, ripple: 1 },
   { shape: "sheets", ns: 0.8, cy: 0.5, shade: 1, cam: [0, 0.2, 10], look: [0, 0.2, 0], size: 1.9, alpha: 0.6, sway: 0.1 },
   { shape: "people", ns: 1.05, cy: 0.55, shade: 1, cam: [0, 0.2, 9.5], look: [0, 0.3, 0], size: 2, alpha: 0.55, sway: 0.16 },
@@ -36,7 +36,7 @@ const VERTEX = /* glsl */ `
   attribute vec3 aRnd;
   uniform highp sampler2D uShapes;
   uniform int uFrom, uTo, uCount, uWidth;
-  uniform float uMix, uTime, uSize, uPixel, uRipple, uShimmer, uMotion;
+  uniform float uMix, uTime, uSize, uPixel, uRipple, uShimmer, uMotion, uAwake;
   varying float vTint;
   varying float vGlow;
 
@@ -51,6 +51,12 @@ const VERTEX = /* glsl */ `
     float m = clamp((uMix - aRnd.x * 0.35) / 0.65, 0.0, 1.0);
     m = m * m * m * (m * (m * 6.0 - 15.0) + 10.0);
     vec3 p = mix(aFrom.xyz, aTo.xyz, m);
+
+    // Rassemblement initial de la poussière d'or à l'ouverture
+    float awake = clamp(uAwake, 0.0, 1.0);
+    float easeAwake = awake * awake * (3.0 - 2.0 * awake);
+    float disperse = (1.0 - easeAwake);
+    p += disperse * (aRnd - 0.5) * 5.0;
 
     // La poussière tourbillonne pendant qu'elle change de forme.
     float bell = sin(3.14159 * m) * uMotion;
@@ -145,6 +151,7 @@ function navigation() {
     "scroll",
     () => {
       const y = window.scrollY;
+      document.body.classList.toggle("scrolled", y > 30);
       nav.classList.toggle("stuck", y > 40);
       if (Math.abs(y - last) < 6) return;
       nav.classList.toggle("away", y > last && y > window.innerHeight * 0.4);
@@ -161,8 +168,8 @@ function scrollRail() {
     "Au commencement",
     "Aujourd’hui",
     "Avec Kavod",
-    "L’appli des fidèles",
-    "La gestion",
+    "L’appli mobile",
+    "Plateforme web",
     "Confiance",
     "Nos églises",
     "La gloire de Dieu",
@@ -226,7 +233,7 @@ function scrollRail() {
 
 // Les textes montent doucement quand leur section arrive, dans les deux sens.
 function reveals() {
-  const items = document.querySelectorAll(".panel .copy > *, .points li, .domains article");
+  const items = document.querySelectorAll(".panel:not(.hero) .copy > *, .points li, .domains article");
   items.forEach((el) => {
     const siblings = [...el.parentElement.children];
     el.classList.add("reveal");
@@ -292,6 +299,7 @@ async function startScene() {
   composer.addPass(new OutputPass());
 
   const uniforms = {
+    uAwake: { value: 0 },
     uMix: { value: 0 },
     uTime: { value: 0 },
     uSize: { value: 1 },
@@ -378,6 +386,45 @@ async function startScene() {
 
   let shown = journey();
   let last = performance.now();
+  let introTime = 0;
+  let introProgress = 0;
+  const LOGO_INDEX = SCENES.findIndex((s) => s.shape === "logo");
+
+  // 3 allers-retours complets KAVOD <-> Goutte : tempo majestueux, lent et très fluide
+  const INTRO_TIMELINE = [
+    [0.0, 0],   // 1ère apparition KAVOD
+    [3.2, 0],   // Maintien KAVOD (3.2s)
+    [6.0, 1],   // Transition soyeuse vers Goutte (2.8s)
+    [8.4, 1],   // Maintien Goutte (2.4s)
+    [11.2, 0],  // Transition soyeuse vers KAVOD (2.8s)
+    [14.0, 0],  // 2ème apparition KAVOD (2.8s)
+    [16.8, 1],  // Transition vers Goutte (2.8s)
+    [19.2, 1],  // Maintien Goutte (2.4s)
+    [22.0, 0],  // Transition vers KAVOD (2.8s)
+    [24.8, 0],  // 3ème apparition KAVOD (2.8s)
+    [27.8, 1],  // Transition finale vers Goutte (3.0s)
+  ];
+  const INTRO_END_TIME = INTRO_TIMELINE[INTRO_TIMELINE.length - 1][0];
+
+  // Interpolation quintique (ultra fluide, sans accélération brusque)
+  const quintic = (t) => {
+    const c = Math.min(Math.max(t, 0), 1);
+    return c * c * c * (c * (c * 6 - 15) + 10);
+  };
+
+  function getIntroMix(t) {
+    if (t >= INTRO_END_TIME) return 1;
+    for (let i = 0; i < INTRO_TIMELINE.length - 1; i++) {
+      const [t0, v0] = INTRO_TIMELINE[i];
+      const [t1, v1] = INTRO_TIMELINE[i + 1];
+      if (t >= t0 && t <= t1) {
+        if (v0 === v1) return v0;
+        const p = (t - t0) / (t1 - t0);
+        return lerp(v0, v1, quintic(p));
+      }
+    }
+    return 1;
+  }
   const pointer = { x: 0, y: 0 };
   const tilt = { x: 0, y: 0 };
   if (!CALM && matchMedia("(pointer: fine)").matches) {
@@ -401,19 +448,64 @@ async function startScene() {
     const time = uniforms.uTime.value;
 
     // Le défilement est lissé : une molette brusque reste fluide.
+    // Éveil progressif de la poussière d'or au chargement
+    if (uniforms.uAwake.value < 1.0) {
+      uniforms.uAwake.value = Math.min(1.0, uniforms.uAwake.value + dt * 0.7);
+    }
+
+    // Le défilement est lissé : une molette brusque reste fluide.
     const target = journey();
     shown += (target - shown) * (1 - Math.exp(-dt * 11));
     if (Math.abs(target - shown) < 0.0005) shown = target;
 
-    const index = Math.min(Math.floor(shown), SCENES.length - 2);
-    const mix = shown - index;
-    uniforms.uFrom.value = index;
-    uniforms.uTo.value = index + 1;
-    uniforms.uMix.value = mix;
+    let a;
+    let b;
+    let e;
 
-    const a = SCENES[index];
-    const b = SCENES[index + 1];
-    const e = smooth(0, 1, mix);
+    // Intro KAVOD <-> Goutte (revient 3 fois avant de rester définitivement sur la goutte)
+    let introActive = false;
+    if (introProgress < 1.0) {
+      if (window.scrollY > 8) {
+        introProgress = 1.0;
+      } else {
+        introTime += dt;
+        if (introTime >= INTRO_END_TIME) {
+          introProgress = 1.0;
+        } else {
+          introActive = true;
+          const introMix = getIntroMix(introTime);
+          uniforms.uFrom.value = LOGO_INDEX >= 0 ? LOGO_INDEX : 9;
+          uniforms.uTo.value = 0;
+          uniforms.uMix.value = introMix;
+
+          const logoHero = {
+            ...SCENES[LOGO_INDEX >= 0 ? LOGO_INDEX : 9],
+            x: 3.6,
+            y: 0.35,
+            scale: 0.46,
+            size: 1.6,
+            alpha: 0.95,
+            glow: 0.85,
+            ns: 0.65,
+          };
+          a = logoHero;
+          b = SCENES[0];
+          e = introMix;
+        }
+      }
+    }
+
+    if (!introActive) {
+      const index = Math.min(Math.floor(shown), SCENES.length - 2);
+      const mix = shown - index;
+      uniforms.uFrom.value = index;
+      uniforms.uTo.value = index + 1;
+      uniforms.uMix.value = mix;
+
+      a = SCENES[index];
+      b = SCENES[index + 1];
+      e = smooth(0, 1, mix);
+    }
     // Moins de points et de pixels sur téléphone : chacun brille davantage pour garder la présence de l'or.
     uniforms.uSize.value = lerp(a.size, b.size, e) * (narrow ? 1.3 : 1);
     uniforms.uAlpha.value = lerp(a.alpha, b.alpha, e) * (narrow ? 1.5 * lerp(a.glow ?? 1, b.glow ?? 1, e) : 1);
@@ -422,6 +514,7 @@ async function startScene() {
     uniforms.uAlpha.value *= 1 - smooth(0, 1, fade);
     uniforms.uRipple.value = lerp(a.ripple ?? 0, b.ripple ?? 0, e);
     uniforms.uShimmer.value = lerp(a.shimmer ?? 0, b.shimmer ?? 0, e);
+    uniforms.uMotion.value = introActive ? 0.32 : (CALM ? 0 : 1);
     const sway = lerp(a.sway ?? 0, b.sway ?? 0, e) * uniforms.uMotion.value;
     // La souris fait tourner légèrement la scène : c'est elle qui rend le relief évident.
     tilt.x += (pointer.x - tilt.x) * (1 - Math.exp(-dt * 3));
@@ -433,7 +526,8 @@ async function startScene() {
     const [ax, ay] = place(a);
     const [bx, by] = place(b);
     points.position.set(lerp(ax, bx, e), lerp(ay, by, e), 0);
-    points.scale.setScalar(narrow ? lerp(a.ns ?? 1, b.ns ?? 1, e) : 1);
+    const targetScale = narrow ? lerp(a.ns ?? 1, b.ns ?? 1, e) : lerp(a.scale ?? 1, b.scale ?? 1, e);
+    points.scale.setScalar(targetScale);
 
     camPos.fromArray(a.cam).lerp(v.fromArray(b.cam), e);
     camLook.fromArray(a.look).lerp(v.fromArray(b.look), e);
